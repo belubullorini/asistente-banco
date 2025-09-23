@@ -56,6 +56,7 @@
     .no_responsable { background-color: #ffc107; color: #000; }
     .cierre { background-color: #6f42c1; color: #fff; }
     .back-btn { background-color: #dc3545; color: #fff; margin-top:10px; }
+    .cierre-text { background-color:#2a2a2a; margin-top:15px; padding:10px; border-radius:8px; border:1px solid #6f42c1; }
 </style>
 </head>
 <body>
@@ -96,15 +97,12 @@ function mostrarSeccion(id, retroceder=false) {
 
     const nodo = flujo[id];
     
-    // Crear tarjeta
     const card = document.createElement("div");
     card.className = "card active";
     card.innerHTML = `<div class="titulo">${nodo.titulo}</div><p>${nodo.texto}</p>`;
 
-    // Agregar animación
     setTimeout(() => { card.classList.add("show"); }, 50);
 
-    // Reemplazar tarjeta actual si retrocede
     if(retroceder && container.firstChild){
         container.replaceChild(card, container.firstChild);
         historial.push(id);
@@ -114,7 +112,7 @@ function mostrarSeccion(id, retroceder=false) {
         historial.push(id);
     }
 
-    // Agregar botones
+    // Botones de opciones
     nodo.opciones.forEach(op => {
         const btn = document.createElement("button");
         btn.className = "option-btn " + (op.texto.includes("responsable") ? "responsable" : (op.texto.includes("no disponible") ? "no_responsable" : "inicio"));
@@ -123,7 +121,13 @@ function mostrarSeccion(id, retroceder=false) {
         card.appendChild(btn);
     });
 
+    // Cierre parcial para nodos sin opciones
     if(nodo.opciones.length === 0 && id !== "cierre"){
+        const cierreParcial = document.createElement("div");
+        cierreParcial.className = "cierre-text";
+        cierreParcial.innerHTML = `<strong>${flujo.cierre.titulo}</strong>\n<p>${flujo.cierre.texto}</p>`;
+        card.appendChild(cierreParcial);
+
         const btn = document.createElement("button");
         btn.className = "cierre";
         btn.innerText = "Finalizar / Cierre";
@@ -131,7 +135,7 @@ function mostrarSeccion(id, retroceder=false) {
         card.appendChild(btn);
     }
 
-    // Botón de retroceder
+    // Botón retroceder
     if(historial.length > 1){
         const backBtn = document.createElement("button");
         backBtn.className = "back-btn";
@@ -153,4 +157,3 @@ mostrarSeccion("inicio");
 
 </body>
 </html>
-
