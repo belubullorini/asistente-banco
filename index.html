@@ -24,38 +24,18 @@
         transition: all 0.5s ease;
         border: 2px solid transparent;
     }
-    .card.show {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    .card.active {
-        border-color: #0d6efd;
-        background-color: #2a2a2a;
-    }
-    .titulo {
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 12px;
-        color: #ffffff;
-    }
-    button.option-btn {
-        display: block;
-        width: 100%;
-        padding: 12px;
-        margin: 6px 0;
-        font-size: 16px;
-        font-weight: bold;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-    button.option-btn:hover { opacity: 0.85; }
+    .card.show { opacity: 1; transform: translateY(0); }
+    .card.active { border-color: #0d6efd; background-color: #2a2a2a; }
+    .titulo { font-size: 20px; font-weight: bold; margin-bottom: 12px; color: #ffffff; }
+    button.option-btn, .back-btn, .cierre, .copy-btn { display: block; width: 100%; padding: 12px; margin: 6px 0; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+    button.option-btn:hover, .back-btn:hover, .cierre:hover, .copy-btn:hover { opacity: 0.85; }
     .inicio { background-color: #0d6efd; color: #fff; }
     .responsable { background-color: #198754; color: #fff; }
     .no_responsable { background-color: #ffc107; color: #000; }
     .cierre { background-color: #6f42c1; color: #fff; }
-    .back-btn { background-color: #dc3545; color: #fff; margin-top:10px; }
+    .back-btn { background-color: #dc3545; color: #fff; }
+    .copy-btn { background-color: #0dcaf0; color: #000; }
+    input.telefono { width: calc(100% - 24px); padding: 8px; margin: 6px 0; border-radius: 6px; border: 1px solid #ccc; font-size: 16px; }
 </style>
 </head>
 <body>
@@ -65,117 +45,36 @@
 
 <script>
 const flujo = {
-    inicio: { 
-        titulo: "Inicio de llamada", 
-        texto: "Buenos días/tardes, ¿me comunico con la empresa [NOMBRE EMPRESA]?\nMi nombre es [TU NOMBRE] y le llamo en representación del Banco Mundial.\nEstamos necesitando hablar con el responsable de la toma de decisiones de la empresa o gerente.\n¿Se encontrará disponible?", 
-        opciones: [
-            {texto:"1. Atiende la persona responsable", siguiente:"responsable"},
-            {texto:"2. No es la persona responsable / no disponible", siguiente:"no_responsable"}
-        ]
-    },
-    responsable: { 
-        titulo:"Si atiende la persona responsable", 
-        texto:"Motivo del llamado:\nEl motivo de la llamada es coordinar una entrevista —presencial o por Zoom— en el día y horario que usted disponga.\n¿Es usted la persona responsable a cargo?", 
-        opciones:[
-            {texto:"1. Pregunta de qué se trata", siguiente:"responsable_detalle"},
-            {texto:"2. No pregunta", siguiente:"responsable_email"}
-        ]
-    },
-    responsable_detalle: { 
-        titulo:"Detalles de la entrevista", 
-        texto:"Es en el marco del estudio internacional conocido como Haciendo Negocios, realizado por el Banco Mundial.\nEl objetivo es conocer las experiencias y desafíos que enfrentan las compañías, para identificar oportunidades de mejora y aportar información al diseño de políticas públicas que fortalezcan la actividad empresarial.\nLa entrevista es breve.", 
-        opciones:[{texto:"Continuar", siguiente:"responsable_email"}]
-    },
-    responsable_email: { 
-        titulo:"Pedir email", 
-        texto:"Para enviarle la información oficial, ¿me podría facilitar un correo electrónico suyo?", 
-        opciones:[
-            {texto:"1. Da el correo", siguiente:"responsable_cierre"},
-            {texto:"2. No da correo / duda", siguiente:"responsable_duda"}
-        ]
-    },
-    responsable_cierre: { 
-        titulo:"Cierre agenda", 
-        texto:"Perfecto, en este momento le estoy enviando el mail con toda la información oficial y el aval del Banco Mundial.\nYa lo tiene en su bandeja, ¿qué día y horario le resulta más cómodo para agendar la entrevista? Puede ser presencial o vía Zoom.\n(El objetivo es cerrar la agenda en ese momento).", 
-        opciones:[]
-    },
-    responsable_duda: { 
-        titulo:"Duda o negativa", 
-        texto:"Lo entiendo perfectamente. Le propongo que revise el correo y la información oficial, y mañana lo volvemos a contactar para confirmar la fecha de la entrevista.", 
-        opciones:[]
-    },
-    no_responsable: { 
-        titulo:"Si NO es la persona responsable", 
-        texto:"Comprendo, ¿sería posible que por favor me transfiera la llamada directamente con la persona encargada de la toma de decisiones?", 
-        opciones:[
-            {texto:"1. Puede transferir", siguiente:"transferencia"},
-            {texto:"2. No puede transferir", siguiente:"no_responsable_contacto"}
-        ]
-    },
-    transferencia: { 
-        titulo:"Transferencia de llamada", 
-        texto:"Perfecto, transfiera la llamada directamente con la persona responsable.", 
-        opciones:[]
-    },
-    no_responsable_contacto: { 
-        titulo:"Pedir contacto", 
-        texto:"Si no puede transferir, ¿podría facilitarme el número de teléfono de la persona responsable para contactarlo directamente?\nLa llamada es de gran importancia, ya que proviene directamente en nombre del Banco Mundial.", 
-        opciones:[
-            {texto:"1. Da teléfono", siguiente:"contacto_telefono"},
-            {texto:"2. No da teléfono, pedir email", siguiente:"contacto_email"}
-        ]
-    },
-    contacto_telefono: { 
-        titulo:"Contacto por teléfono", 
-        texto:"Genial, contactaré directamente por teléfono.", 
-        opciones:[]
-    },
-    contacto_email: { 
-        titulo:"Contacto por email", 
-        texto:"En ese caso, ¿me podría facilitar el correo electrónico de la persona encargada para enviarle de inmediato la información oficial del Banco Mundial?", 
-        opciones:[
-            {texto:"1. Da correo", siguiente:"email_cierre"},
-            {texto:"2. No da ningún contacto", siguiente:"sin_contacto"}
-        ]
-    },
-    email_cierre: { 
-        titulo:"Email enviado", 
-        texto:"Perfecto, en este momento le estoy enviando el mail con toda la información oficial y el aval del Banco Mundial.\n¿Podría comentarle que ya tiene la información en su bandeja y consultarle qué día y horario le resultaría más cómodo para la entrevista?\nMañana lo estaremos llamando nuevamente para confirmar la agenda.", 
-        opciones:[]
-    },
-    sin_contacto: { 
-        titulo:"Sin contacto", 
-        texto:"No hay problema. Le agradecería si pudiera informarle que hemos llamado de parte del Banco Mundial para coordinar una entrevista.\nMañana volveremos a comunicarnos para avanzar con la agenda.", 
-        opciones:[]
-    },
-    cierre: { 
-        titulo:"Cierre cordial", 
-        texto:"Muchas gracias por su tiempo y colaboración. Que tenga un buen día.", 
-        opciones:[]
-    }
+    inicio: { titulo: "Inicio de llamada", texto: "Buenos días/tardes, ¿me comunico con la empresa [NOMBRE EMPRESA]?\nMi nombre es [TU NOMBRE] y le llamo en representación del Banco Mundial.\nEstamos necesitando hablar con el responsable de la toma de decisiones de la empresa o gerente.\n¿Se encontrará disponible?", opciones: [{texto:"1. Atiende la persona responsable", siguiente:"responsable"},{texto:"2. No es la persona responsable / no disponible", siguiente:"no_responsable"}]},
+    responsable: { titulo:"Si atiende la persona responsable", texto:"Motivo del llamado:\nEl motivo de la llamada es coordinar una entrevista —presencial o por Zoom— en el día y horario que usted disponga.\n¿Es usted la persona responsable a cargo?", opciones:[{texto:"1. Pregunta de qué se trata", siguiente:"responsable_detalle"},{texto:"2. No pregunta", siguiente:"responsable_email"}]},
+    responsable_detalle: { titulo:"Detalles de la entrevista", texto:"Es en el marco del estudio internacional conocido como Haciendo Negocios, realizado por el Banco Mundial.\nEl objetivo es conocer las experiencias y desafíos que enfrentan las compañías, para identificar oportunidades de mejora y aportar información al diseño de políticas públicas que fortalezcan la actividad empresarial.\nLa entrevista es breve.", opciones:[{texto:"Continuar", siguiente:"responsable_email"}]},
+    responsable_email: { titulo:"Pedir email", texto:"Para enviarle la información oficial, ¿me podría facilitar un correo electrónico suyo?", opciones:[{texto:"1. Da el correo", siguiente:"responsable_cierre"},{texto:"2. No da correo / duda", siguiente:"responsable_duda"}]},
+    responsable_cierre: { titulo:"Cierre agenda", texto:"Perfecto, en este momento le estoy enviando el mail con toda la información oficial y el aval del Banco Mundial.\nYa lo tiene en su bandeja, ¿qué día y horario le resulta más cómodo para agendar la entrevista? Puede ser presencial o vía Zoom.\n(El objetivo es cerrar la agenda en ese momento).", opciones:[]},
+    responsable_duda: { titulo:"Duda o negativa", texto:"Lo entiendo perfectamente. Le propongo que revise el correo y la información oficial, y mañana lo volvemos a contactar para confirmar la fecha de la entrevista.", opciones:[]},
+    no_responsable: { titulo:"Si NO es la persona responsable", texto:"Comprendo, ¿sería posible que por favor me transfiera la llamada directamente con la persona encargada de la toma de decisiones?", opciones:[{texto:"1. Puede transferir", siguiente:"transferencia"},{texto:"2. No puede transferir", siguiente:"no_responsable_contacto"}]},
+    transferencia: { titulo:"Transferencia de llamada", texto:"Perfecto, transfiera la llamada directamente con la persona responsable.", opciones:[]},
+    no_responsable_contacto: { titulo:"Pedir contacto", texto:"Si no puede transferir, ¿podría facilitarme el número de teléfono de la persona responsable para contactarlo directamente?\nLa llamada es de gran importancia, ya que proviene directamente en nombre del Banco Mundial.", opciones:[{texto:"1. Da teléfono", siguiente:"contacto_telefono"},{texto:"2. No da teléfono, pedir email", siguiente:"contacto_email"}]},
+    contacto_telefono: { titulo:"Contacto por teléfono", texto:"Genial, ingresaré el teléfono y continuaré con la llamada.", opciones:[]},
+    contacto_email: { titulo:"Contacto por email", texto:"En ese caso, ¿me podría facilitar el correo electrónico de la persona encargada para enviarle de inmediato la información oficial del Banco Mundial?", opciones:[{texto:"1. Da correo", siguiente:"email_cierre"},{texto:"2. No da ningún contacto", siguiente:"sin_contacto"}]},
+    email_cierre: { titulo:"Email enviado", texto:"Perfecto, en este momento le estoy enviando el mail con toda la información oficial y el aval del Banco Mundial.\n¿Podría comentarle que ya tiene la información en su bandeja y consultarle qué día y horario le resultaría más cómodo para la entrevista?\nMañana lo estaremos llamando nuevamente para confirmar la agenda.", opciones:[]},
+    sin_contacto: { titulo:"Sin contacto", texto:"No hay problema. Le agradecería si pudiera informarle que hemos llamado de parte del Banco Mundial para coordinar una entrevista.\nMañana volveremos a comunicarnos para avanzar con la agenda.", opciones:[]}
 };
 
 let container = document.getElementById("container");
 let historial = [];
+let telefonoGuardado = "";
+let rutaOpciones = [];
 
 function mostrarSeccion(id, retroceder=false) {
-    if(id === "cierre"){
-        setTimeout(() => {
-            container.innerHTML = "";
-            historial = [];
-            mostrarSeccion("inicio");
-        }, 1000);
-        return;
-    }
-
     const nodo = flujo[id];
     
+    // Crear tarjeta
     const card = document.createElement("div");
     card.className = "card active";
     card.innerHTML = `<div class="titulo">${nodo.titulo}</div><p>${nodo.texto}</p>`;
-
+    
     setTimeout(() => { card.classList.add("show"); }, 50);
-
+    
     if(retroceder && container.firstChild){
         container.replaceChild(card, container.firstChild);
         historial.push(id);
@@ -184,30 +83,77 @@ function mostrarSeccion(id, retroceder=false) {
         container.appendChild(card);
         historial.push(id);
     }
-
-    // Botones de opciones
+    
+    // Guardar ruta de opciones
+    if(historial.length > 1) rutaOpciones.push(id);
+    
+    // Agregar botones de opciones
     nodo.opciones.forEach(op => {
         const btn = document.createElement("button");
         btn.className = "option-btn " + (op.texto.includes("responsable") ? "responsable" : (op.texto.includes("no disponible") ? "no_responsable" : "inicio"));
         btn.innerText = op.texto;
-        btn.onclick = () => mostrarSeccion(op.siguiente);
+        btn.onclick = () => {
+            // Guardar teléfono si es la opción de "Da teléfono"
+            if(op.siguiente === "contacto_telefono"){
+                const tel = prompt("Ingrese el teléfono proporcionado:");
+                if(tel) telefonoGuardado = tel;
+            }
+            mostrarSeccion(op.siguiente);
+        };
         card.appendChild(btn);
     });
 
-    if(nodo.opciones.length === 0 && id !== "cierre"){
-        const btn = document.createElement("button");
-        btn.className = "cierre";
-        btn.innerText = "Finalizar / Cierre";
-        btn.onclick = () => mostrarSeccion("cierre");
-        card.appendChild(btn);
+    // Si no hay opciones, mostrar cierre y resumen
+    if(nodo.opciones.length === 0){
+        // Saludo final
+        const saludo = document.createElement("p");
+        saludo.style.marginTop = "12px";
+        saludo.style.fontWeight = "bold";
+        saludo.innerText = "Muchas gracias por su tiempo y colaboración. Que tenga un buen día.";
+        card.appendChild(saludo);
+        
+        // Resumen
+        const resumen = document.createElement("div");
+        resumen.style.backgroundColor = "#333";
+        resumen.style.borderRadius = "10px";
+        resumen.style.padding = "10px";
+        resumen.style.marginTop = "12px";
+        resumen.innerHTML = `<strong>Resumen de la llamada:</strong>\nRuta de opciones: ${rutaOpciones.join(" → ")}\nTeléfono: ${telefonoGuardado || "No se obtuvo"} `;
+        
+        // Botón copiar teléfono
+        if(telefonoGuardado){
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy-btn";
+            copyBtn.innerText = "Copiar teléfono al portapapeles";
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(telefonoGuardado);
+                alert("Teléfono copiado!");
+            };
+            resumen.appendChild(copyBtn);
+        }
+        card.appendChild(resumen);
+        
+        // Botón reinicio
+        const btnReiniciar = document.createElement("button");
+        btnReiniciar.className = "cierre";
+        btnReiniciar.innerText = "Reiniciar llamada";
+        btnReiniciar.onclick = () => {
+            historial = [];
+            rutaOpciones = [];
+            telefonoGuardado = "";
+            mostrarSeccion("inicio");
+        };
+        card.appendChild(btnReiniciar);
     }
-
+    
+    // Botón de retroceder
     if(historial.length > 1){
         const backBtn = document.createElement("button");
         backBtn.className = "back-btn";
         backBtn.innerText = "← Volver un paso";
         backBtn.onclick = () => {
             historial.pop();
+            rutaOpciones.pop();
             const prev = historial.pop();
             mostrarSeccion(prev, true);
         };
