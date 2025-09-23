@@ -24,31 +24,12 @@
         transition: all 0.5s ease;
         border: 2px solid transparent;
     }
-    .card.show {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    .card.active {
-        border-color: #0d6efd;
-        background-color: #2a2a2a;
-    }
-    .titulo {
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 12px;
-        color: #ffffff;
-    }
+    .card.show { opacity: 1; transform: translateY(0); }
+    .card.active { border-color: #0d6efd; background-color: #2a2a2a; }
+    .titulo { font-size: 20px; font-weight: bold; margin-bottom: 12px; color: #ffffff; }
     button.option-btn {
-        display: block;
-        width: 100%;
-        padding: 12px;
-        margin: 6px 0;
-        font-size: 16px;
-        font-weight: bold;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: 0.3s;
+        display: block; width: 100%; padding: 12px; margin: 6px 0; font-size: 16px;
+        font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s;
     }
     button.option-btn:hover { opacity: 0.85; }
     .inicio { background-color: #0d6efd; color: #fff; }
@@ -56,13 +37,16 @@
     .no_responsable { background-color: #ffc107; color: #000; }
     .cierre { background-color: #6f42c1; color: #fff; }
     .back-btn { background-color: #dc3545; color: #fff; margin-top:10px; }
-    .cierre-text { background-color:#2a2a2a; margin-top:15px; padding:10px; border-radius:8px; border:1px solid #6f42c1; }
+    .resumen { background-color: #2a2a2a; border: 2px solid #0d6efd; padding: 15px; margin-top: 20px; border-radius: 10px; }
+    .copiar-btn { background-color: #0d6efd; color: #fff; padding: 10px; border: none; border-radius: 8px; cursor: pointer; margin-top:10px; font-weight:bold; }
+    .copiar-btn:hover { opacity: 0.85; }
 </style>
 </head>
 <body>
 
 <h1>Asistente de Llamadas – Banco Mundial</h1>
 <div id="container"></div>
+<div id="resumenContainer"></div>
 
 <script>
 const flujo = {
@@ -75,7 +59,7 @@ const flujo = {
     no_responsable: { titulo:"Si NO es la persona responsable", texto:"Comprendo, ¿sería posible que por favor me transfiera la llamada directamente con la persona encargada de la toma de decisiones?", opciones:[{texto:"1. Puede transferir", siguiente:"transferencia"},{texto:"2. No puede transferir", siguiente:"no_responsable_contacto"}]},
     transferencia: { titulo:"Transferencia de llamada", texto:"Perfecto, transfiera la llamada directamente con la persona responsable.", opciones:[]},
     no_responsable_contacto: { titulo:"Pedir contacto", texto:"Si no puede transferir, ¿podría facilitarme el número de teléfono de la persona responsable para contactarlo directamente?\nLa llamada es de gran importancia, ya que proviene directamente en nombre del Banco Mundial.", opciones:[{texto:"1. Da teléfono", siguiente:"contacto_telefono"},{texto:"2. No da teléfono, pedir email", siguiente:"contacto_email"}]},
-    contacto_telefono: { titulo:"Contacto por teléfono", texto:"Genial, contactaré directamente por teléfono.", opciones:[]},
+    contacto_telefono: { titulo:"Contacto por teléfono", texto:"Genial, contactaré directamente por teléfono.", opciones:[], guardar:{telefono:true}},
     contacto_email: { titulo:"Contacto por email", texto:"En ese caso, ¿me podría facilitar el correo electrónico de la persona encargada para enviarle de inmediato la información oficial del Banco Mundial?", opciones:[{texto:"1. Da correo", siguiente:"email_cierre"},{texto:"2. No da ningún contacto", siguiente:"sin_contacto"}]},
     email_cierre: { titulo:"Email enviado", texto:"Perfecto, en este momento le estoy enviando el mail con toda la información oficial y el aval del Banco Mundial.\n¿Podría comentarle que ya tiene la información en su bandeja y consultarle qué día y horario le resultaría más cómodo para la entrevista?\nMañana lo estaremos llamando nuevamente para confirmar la agenda.", opciones:[]},
     sin_contacto: { titulo:"Sin contacto", texto:"No hay problema. Le agradecería si pudiera informarle que hemos llamado de parte del Banco Mundial para coordinar una entrevista.\nMañana volveremos a comunicarnos para avanzar con la agenda.", opciones:[]},
@@ -83,20 +67,40 @@ const flujo = {
 };
 
 let container = document.getElementById("container");
+let resumenContainer = document.getElementById("resumenContainer");
 let historial = [];
+let datos = {telefono: null};
 
 function mostrarSeccion(id, retroceder=false) {
     if(id === "cierre"){
+        // Mostrar resumen en la página
+        let resumenHtml = `<div class="resumen"><strong>✅ Llamada finalizada.</strong><br>`;
+        if(datos.telefono) resumenHtml += `📞 Teléfono obtenido: <span id="telNumber">${datos.telefono}</span><br>`;
+        resumenHtml += `Ruta tomada: ${historial.join(" → ")}</div>`;
+
+        resumenContainer.innerHTML = resumenHtml;
+
+        if(datos.telefono){
+            const copiarBtn = document.createElement("button");
+            copiarBtn.className = "copiar-btn";
+            copiarBtn.innerText = "Copiar teléfono al portapapeles";
+            copiarBtn.onclick = () => {
+                navigator.clipboard.writeText(datos.telefono);
+                alert("Número copiado al portapapeles");
+            };
+            resumenContainer.appendChild(copiarBtn);
+        }
+
         setTimeout(() => {
             container.innerHTML = "";
             historial = [];
+            datos = {telefono: null};
             mostrarSeccion("inicio");
-        }, 1000);
+        }, 500);
         return;
     }
 
     const nodo = flujo[id];
-    
     const card = document.createElement("div");
     card.className = "card active";
     card.innerHTML = `<div class="titulo">${nodo.titulo}</div><p>${nodo.texto}</p>`;
@@ -112,48 +116,6 @@ function mostrarSeccion(id, retroceder=false) {
         historial.push(id);
     }
 
-    // Botones de opciones
     nodo.opciones.forEach(op => {
         const btn = document.createElement("button");
         btn.className = "option-btn " + (op.texto.includes("responsable") ? "responsable" : (op.texto.includes("no disponible") ? "no_responsable" : "inicio"));
-        btn.innerText = op.texto;
-        btn.onclick = () => mostrarSeccion(op.siguiente);
-        card.appendChild(btn);
-    });
-
-    // Cierre parcial para nodos sin opciones
-    if(nodo.opciones.length === 0 && id !== "cierre"){
-        const cierreParcial = document.createElement("div");
-        cierreParcial.className = "cierre-text";
-        cierreParcial.innerHTML = `<strong>${flujo.cierre.titulo}</strong>\n<p>${flujo.cierre.texto}</p>`;
-        card.appendChild(cierreParcial);
-
-        const btn = document.createElement("button");
-        btn.className = "cierre";
-        btn.innerText = "Finalizar / Cierre";
-        btn.onclick = () => mostrarSeccion("cierre");
-        card.appendChild(btn);
-    }
-
-    // Botón retroceder
-    if(historial.length > 1){
-        const backBtn = document.createElement("button");
-        backBtn.className = "back-btn";
-        backBtn.innerText = "← Volver un paso";
-        backBtn.onclick = () => {
-            historial.pop(); // quitar actual
-            const prev = historial.pop(); // obtener anterior
-            mostrarSeccion(prev, true);
-        };
-        card.appendChild(backBtn);
-    }
-
-    card.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-// Iniciar
-mostrarSeccion("inicio");
-</script>
-
-</body>
-</html>
