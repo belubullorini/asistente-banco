@@ -17,7 +17,6 @@
     .cierre { background-color: #6f42c1; color: #fff; }
     .back-btn { background-color: #dc3545; color: #fff; }
     .copy-btn { background-color: #0dcaf0; color: #000; }
-    input.telefono { width: calc(100% - 24px); padding: 8px; margin: 6px 0; border-radius: 6px; border: 1px solid #ccc; font-size: 16px; }
 </style>
 </head>
 <body>
@@ -29,7 +28,7 @@
 const flujo = {
     inicio: { 
         titulo: "Inicio de llamada", 
-        texto: "Buenos días/tardes, ¿me comunico con la empresa [NOMBRE EMPRESA]?\nMi nombre es [TU NOMBRE] y le llamo en representación del Banco Mundial.\nEstamos necesitando hablar con el responsable de la toma de decisiones de la empresa o gerente.\n¿Se encontrará disponible?\n(Motivo: Coordinar entrevista para el estudio Haciendo Negocios, conocer experiencias y desafíos de la compañía)", 
+        texto: "Buenos días/tardes, ¿me comunico con la empresa [NOMBRE EMPRESA]?\nMi nombre es [TU NOMBRE] y le llamo en representación del Banco Mundial.\nEstamos necesitando hablar con el responsable de la toma de decisiones de la empresa o gerente.\n¿Se encontrará disponible? (Motivo del llamado: coordinar una entrevista en el marco del estudio Haciendo Negocios)", 
         opciones: [
             {texto:"1. Atiende la persona responsable", siguiente:"responsable"},
             {texto:"2. No es la persona responsable / no disponible", siguiente:"no_responsable"}
@@ -37,7 +36,7 @@ const flujo = {
     },
     responsable: { 
         titulo:"Si atiende la persona responsable", 
-        texto:"Motivo del llamado y detalles de la entrevista:\nEl objetivo es coordinar una entrevista —presencial o por Zoom— en el día y horario que le resulte más cómodo, en el marco del estudio Haciendo Negocios.\nTambién necesitamos un correo electrónico para enviar la información oficial.", 
+        texto:"Motivo del llamado y detalles de la entrevista:\nEl objetivo es coordinar una entrevista —presencial o por Zoom— en el día y horario que le resulte más cómodo, en el marco del estudio Haciendo Negocios, realizado por el Banco Mundial. (El objetivo es conocer las experiencias y desafíos que enfrentan las compañías, para así identificar oportunidades de mejora y aportar información al diseño de políticas públicas que fortalezcan la actividad empresarial.) La entrevista es breve.\n\nPara enviarle la información oficial, ¿me brindaría su correo electrónico?", 
         opciones:[
             {texto:"1. Da el correo", siguiente:"responsable_cierre"},
             {texto:"2. No da correo / duda", siguiente:"responsable_duda"}
@@ -45,17 +44,17 @@ const flujo = {
     },
     responsable_cierre: { 
         titulo:"Cierre agenda", 
-        texto:"Perfecto, en este momento le estoy enviando el mail con toda la información oficial y el aval del Banco Mundial.\nYa lo tiene en su bandeja, ¿qué día y horario le resulta más cómodo para agendar la entrevista? Puede ser presencial o vía Zoom.\n(El objetivo es cerrar la agenda en ese momento).", 
+        texto:"Perfecto, en este momento le estoy enviando el mail con toda la información oficial y el aval del Banco Mundial.\nYa lo tiene en su bandeja, ¿qué día y horario le resulta más cómodo para agendar la entrevista? Puede ser presencial o vía Zoom.", 
         opciones:[]
     },
     responsable_duda: { 
         titulo:"Duda o negativa", 
-        texto:"Lo entiendo perfectamente. Le propongo que revise el correo y la información oficial, y mañana lo volvemos a contactar para confirmar la fecha de la entrevista.", 
+        texto:"Si duda: Le propongo que revise el correo que le enviaré, y mañana lo volvemos a contactar para confirmar la fecha de la entrevista.\nSi se niega: Puede revisar la información en la página de Datavoz (datavoz.cl) y mañana nos comunicaremos nuevamente para avanzar con la agenda.", 
         opciones:[]
     },
     no_responsable: { 
         titulo:"Si NO es la persona responsable", 
-        texto:"Comprendo, ¿sería posible que por favor me transfiera la llamada directamente con la persona encargada de la toma de decisiones?\n(Motivo: Coordinar entrevista para el estudio Haciendo Negocios, conocer experiencias y desafíos de la compañía)", 
+        texto:"Comprendo, ¿sería posible que por favor me transfiera la llamada directamente con la persona encargada de la toma de decisiones? (Motivo del llamado: coordinar una entrevista en el marco del estudio Haciendo Negocios)", 
         opciones:[
             {texto:"1. Puede transferir", siguiente:"transferencia"},
             {texto:"2. No puede transferir", siguiente:"no_responsable_contacto"}
@@ -63,27 +62,27 @@ const flujo = {
     },
     transferencia: { 
         titulo:"Transferencia de llamada", 
-        texto:"Perfecto, quedo a la espera.", 
+        texto:"Perfecto, quedo a la espera de la transferencia. (Motivo del llamado: coordinar una entrevista en el marco del estudio Haciendo Negocios)", 
         opciones:[
             {texto:"Continuar con persona responsable", siguiente:"responsable"}
         ]
     },
     no_responsable_contacto: { 
         titulo:"Pedir contacto", 
-        texto:"Si no puede transferir, ¿podría facilitarme el número de teléfono de la persona responsable para contactarlo directamente?\n(Motivo: Coordinar entrevista para el estudio Haciendo Negocios, conocer experiencias y desafíos de la compañía)", 
+        texto:"Si no puede transferir, ¿podría facilitarme el número de teléfono de la persona responsable para contactarlo directamente? (Motivo del llamado: coordinar una entrevista en el marco del estudio Haciendo Negocios)", 
         opciones:[
             {texto:"1. Da teléfono", siguiente:"contacto_telefono"},
-            {texto:"2. No da teléfono, pedir email", siguiente:"contacto_email"}
+            {texto:"2. No da teléfono / pedir email", siguiente:"contacto_email"}
         ]
     },
     contacto_telefono: { 
         titulo:"Contacto por teléfono", 
-        texto:"Genial, ingresaré el teléfono y continuaré con la llamada.\n(Motivo: Coordinar entrevista para el estudio Haciendo Negocios, conocer experiencias y desafíos de la compañía)", 
+        texto:"Genial, ingresaré el teléfono y continuaré con la llamada. (Motivo del llamado: coordinar una entrevista en el marco del estudio Haciendo Negocios)", 
         opciones:[]
     },
     contacto_email: { 
         titulo:"Contacto por email", 
-        texto:"En ese caso, ¿me podría facilitar el correo electrónico de la persona encargada para enviarle de inmediato la información oficial del Banco Mundial?\n(Motivo: Coordinar entrevista para el estudio Haciendo Negocios, conocer experiencias y desafíos de la compañía)", 
+        texto:"En ese caso, ¿me podría facilitar el correo electrónico de la persona encargada para enviarle de inmediato la información oficial del Banco Mundial? (Motivo del llamado: coordinar una entrevista en el marco del estudio Haciendo Negocios)", 
         opciones:[
             {texto:"1. Da correo", siguiente:"email_cierre"},
             {texto:"2. No da ningún contacto", siguiente:"sin_contacto"}
@@ -109,7 +108,6 @@ let rutaOpciones = [];
 function mostrarSeccion(id, retroceder=false) {
     const nodo = flujo[id];
     
-    // Crear tarjeta
     const card = document.createElement("div");
     card.className = "card active";
     card.innerHTML = `<div class="titulo">${nodo.titulo}</div><p>${nodo.texto}</p>`;
@@ -127,7 +125,6 @@ function mostrarSeccion(id, retroceder=false) {
     
     if(historial.length > 1) rutaOpciones.push(id);
     
-    // Agregar botones
     nodo.opciones.forEach(op => {
         const btn = document.createElement("button");
         btn.className = "option-btn " + (op.texto.includes("responsable") ? "responsable" : (op.texto.includes("no disponible") ? "no_responsable" : "inicio"));
@@ -142,7 +139,6 @@ function mostrarSeccion(id, retroceder=false) {
         card.appendChild(btn);
     });
 
-    // Si no hay opciones, mostrar saludo final y resumen
     if(nodo.opciones.length === 0){
         const saludo = document.createElement("p");
         saludo.style.marginTop = "12px";
@@ -157,50 +153,4 @@ function mostrarSeccion(id, retroceder=false) {
         resumen.style.marginTop = "12px";
         resumen.innerHTML = `<strong>Resumen de la llamada:</strong>\nRuta de opciones: ${rutaOpciones.join(" → ")}\nTeléfono: ${telefonoGuardado || "No se obtuvo"} `;
         
-        if(telefonoGuardado){
-            const copyBtn = document.createElement("button");
-            copyBtn.className = "copy-btn";
-            copyBtn.innerText = "Copiar teléfono al portapapeles";
-            copyBtn.onclick = () => {
-                navigator.clipboard.writeText(telefonoGuardado);
-                alert("Teléfono copiado!");
-            };
-            resumen.appendChild(copyBtn);
-        }
-        card.appendChild(resumen);
-        
-        const btnReiniciar = document.createElement("button");
-        btnReiniciar.className = "cierre";
-        btnReiniciar.innerText = "Reiniciar llamada";
-        btnReiniciar.onclick = () => {
-            historial = [];
-            rutaOpciones = [];
-            telefonoGuardado = "";
-            mostrarSeccion("inicio");
-        };
-        card.appendChild(btnReiniciar);
-    }
-
-    // Botón retroceder
-    if(historial.length > 1){
-        const backBtn = document.createElement("button");
-        backBtn.className = "back-btn";
-        backBtn.innerText = "← Volver un paso";
-        backBtn.onclick = () => {
-            historial.pop();
-            rutaOpciones.pop();
-            const prev = historial.pop();
-            mostrarSeccion(prev, true);
-        };
-        card.appendChild(backBtn);
-    }
-
-    card.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-// Iniciar
-mostrarSeccion("inicio");
-</script>
-
-</body>
-</html>
+        if(telefono
